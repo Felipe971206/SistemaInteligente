@@ -88,13 +88,47 @@ def describir_ruta(camino: List[Tuple[str, Optional[str]]]) -> str:
 # 4. Ejecución principal
 # -------------------------------
 if __name__ == "__main__":
-    origen = "Portal Norte"
-    destino = "Portal Américas"
+    red = cargar_red_desde_csv("red_tm.csv")
+
+    # Mostrar todas las estaciones disponibles
+    estaciones = sorted(red.keys())
+    print("=== PLANIFICADOR DE RUTAS TRANSMILENIO ===\n")
+    print("Estaciones disponibles:")
+    for i, est in enumerate(estaciones, start=1):
+        print(f"{i}. {est}")
+    print()
+
+    # Selección de origen
+    while True:
+        try:
+            origen_idx = int(input("Selecciona el número de la estación de ORIGEN: "))
+            if 1 <= origen_idx <= len(estaciones):
+                origen = estaciones[origen_idx - 1]
+                break
+            else:
+                print("⚠️ Número fuera de rango, intenta de nuevo.")
+        except ValueError:
+            print("⚠️ Ingresa un número válido.")
+
+    # Selección de destino
+    while True:
+        try:
+            destino_idx = int(input("Selecciona el número de la estación de DESTINO: "))
+            if 1 <= destino_idx <= len(estaciones):
+                destino = estaciones[destino_idx - 1]
+                break
+            else:
+                print("⚠️ Número fuera de rango, intenta de nuevo.")
+        except ValueError:
+            print("⚠️ Ingresa un número válido.")
+
     penalizacion = 6  # minutos por transbordo
 
-    red = cargar_red_desde_csv("red_tm.csv")
+    # Ejecutar búsqueda
     minutos, camino = mejor_ruta(red, origen, destino, penalizacion)
 
+    # Mostrar resultado
+    print("\n=== RESULTADO ===")
     if minutos is None:
         print("No se encontró ruta.")
     else:
